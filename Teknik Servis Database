@@ -1,0 +1,124 @@
+CREATE TABLE TBlKULLANICIADI (
+    KullaniciadiID INT PRIMARY KEY IDENTITY(1,1),
+    KULLANICIAD VARCHAR(50) NOT NULL,                
+    SIFRE VARCHAR(255) NOT NULL                    
+);
+
+
+CREATE TABLE TBLMUSTERI (
+    MUSTERIID INT PRIMARY KEY IDENTITY(1,1),       
+    AD VARCHAR(100) NOT NULL,                      
+    SOYAD VARCHAR(100) NOT NULL,                   
+    TELEFON VARCHAR(15),													
+    MAIL VARCHAR(255),                               
+    IL VARCHAR(50) NOT NULL,                         
+    ILCE VARCHAR(50) NOT NULL,                       
+    BANKA VARCHAR(100),                              
+    VERGIDAIRESI VARCHAR(100),                       
+    VERGINO VARCHAR(20),                             
+    STATU VARCHAR(50),                               
+    ADRES NVARCHAR(MAX)                              
+);
+
+-- Departman Tablosu
+CREATE TABLE TBLDEPARTMAN (
+    DEPARTMANID INT PRIMARY KEY IDENTITY(1,1),     
+    DepartmanAd VARCHAR(100) NOT NULL,               
+    Aciklama NVARCHAR(MAX)                          
+);
+
+CREATE TABLE TBLGIDER (
+    GiderID INT PRIMARY KEY IDENTITY(1,1),          
+    GiderAciklama NVARCHAR(MAX),                    
+    Tarih DATE NOT NULL,                             
+    Tutar DECIMAL(10, 2) NOT NULL                   
+);
+
+CREATE TABLE TBLKATEGORI (
+    KategoriID INT PRIMARY KEY IDENTITY(1,1),       
+    KategoriAd VARCHAR(100) NOT NULL                
+);
+
+
+CREATE TABLE TBLNOTLARIM (
+    NotlarimID INT PRIMARY KEY IDENTITY(1,1),      
+    BASLIK VARCHAR(100) NOT NULL,                    
+    ICERIK NVARCHAR(MAX) NOT NULL,                  
+    DURUM VARCHAR(50) NOT NULL                      
+);
+
+
+CREATE TABLE TBLPERSONEL (
+    PERSONELID INT PRIMARY KEY IDENTITY(1,1),       
+    AD VARCHAR(100) NOT NULL,                        
+    SOYAD VARCHAR(100) NOT NULL,                     
+    DEPARTMAN VARCHAR(100) NOT NULL,                
+    FOTOGRAF VARBINARY(MAX),                         
+    MAIL VARCHAR(255),                              
+    TELEFON VARCHAR(15)                              
+);
+
+
+CREATE TABLE TBLURUN (
+    URUNID INT PRIMARY KEY IDENTITY(1,1),          
+    URUNAD VARCHAR(100) NOT NULL,                   
+    MARKA VARCHAR(100) NOT NULL,                   
+    ALISFIYATI DECIMAL(10, 2) NOT NULL,             
+    SATIS DECIMAL(10, 2) NOT NULL,                  
+    STOK INT NOT NULL,                              
+    KATEGORI INT NOT NULL,                          
+    DURUM VARCHAR(50) NOT NULL,                     
+    FOREIGN KEY (KATEGORI) REFERENCES TBLKATEGORI(KategoriID) 
+);
+
+
+CREATE TABLE TBLURUNHAREKET (
+    HareketID INT PRIMARY KEY IDENTITY(1,1),       
+    URUN INT NOT NULL,                               
+    MUSTERI INT NOT NULL,                            
+    PERSONEL INT NOT NULL,                           
+    TARIH DATE NOT NULL, 
+	);
+CREATE TABLE TBLFaturabilgi (
+    ID INT PRIMARY KEY IDENTITY(1,1),               
+    SERI VARCHAR(10) NOT NULL,                        
+    SIRANO INT NOT NULL,                              
+    TARIH DATE NOT NULL,                              
+    SAAT TIME NOT NULL,                               
+    VERGIDAIRE VARCHAR(100),                          
+    MUSTERI INT NOT NULL,                             
+    PERSONEL INT NOT NULL,                            
+    FOREIGN KEY (MUSTERI) REFERENCES TBLMUSTERI(MUSTERIID),  
+    FOREIGN KEY (PERSONEL) REFERENCES TBLPERSONEL(PERSONELID)
+);
+CREATE TABLE TBLFaturadetay (
+    FATURADETAYID INT PRIMARY KEY IDENTITY(1,1),    
+    URUN VARCHAR(100) NOT NULL,                       
+    ADET INT NOT NULL,                                
+    FIYAT DECIMAL(10, 2) NOT NULL,                   
+    TUTAR AS (ADET * FIYAT),                         
+    FATURAID INT NOT NULL,                            
+    FOREIGN KEY (FATURAID) REFERENCES TBLFaturabilgi(ID)
+); 
+
+CREATE TABLE TBLURUNKABUL (
+    IslemID INT PRIMARY KEY IDENTITY(1,1),    
+    URUN INT NOT NULL,                              
+    MUSTERI INT NOT NULL,                           
+    PERSONEL INT NOT NULL,                          
+    GELISTARIHI DATE NOT NULL,                   
+    CIKISTARIHI DATE NOT NULL,                      
+    FOREIGN KEY (URUN) REFERENCES TBLURUN(URUNID),  
+    FOREIGN KEY (MUSTERI) REFERENCES TBLMUSTERI(MUSTERIID), 
+    FOREIGN KEY (PERSONEL) REFERENCES TBLPERSONEL(PERSONELID)
+);
+
+
+CREATE TABLE TBLURUNTAKIP (
+    TAKIPID INT PRIMARY KEY IDENTITY(1,1),         
+    URUN INT NOT NULL,                              
+    DURUM VARCHAR(50) NOT NULL,                     
+    TARIH DATE NOT NULL,                           
+    TAKIPKODU VARCHAR(100) NOT NULL,                
+    FOREIGN KEY (URUN) REFERENCES TBLURUN(URUNID)   
+);
